@@ -1,9 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
-
-version = VERSION
-group = 'org.baole.materialedittext'
 
 android {
   compileSdkVersion Integer.parseInt(COMPILE_SDK)
@@ -27,6 +23,11 @@ dependencies {
   compile 'com.android.support:support-annotations:' + SUPPORT_VERSION
   compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
 }
+
+//publishing ------------------------------
+
+version = VERSION
+group = 'org.baole.materialedittext'
 
 
 task generateSourcesJar(type: Jar) {
@@ -52,23 +53,58 @@ artifacts {
   archives generateSourcesJar
 }
 
-bintray {
-  user = USER
-  key = BINTRAY_KEY
-  pkg {
-    repo = 'maven'
-    name = group
 
-    version {
-      name = VERSION
-      desc = 'Material EditText'
-      released  = new Date()
-      vcsTag = VERSION
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            groupId group
+            version version
+            artifact "$buildDir/outputs/aar/library-release.aar" //aar artifact you want to publish
+
+            //generate pom nodes for dependencies
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.compile.allDependencies.each { dependency ->
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dependency.group)
+                    dependencyNode.appendNode('artifactId', dependency.name)
+                    dependencyNode.appendNode('version', dependency.version)
+                }
+            }
+        }
+    }
+}
+
+
+bintray {
+    user = USER
+    key = BINTRAY_KEY
+    publications = ['MyPublication']
+    pkg {
+//        repo = 'generic'
+        repo = 'maven'
+        name = group
+
+        userOrg = user
+
+        version {
+            name = VERSION
+            desc = 'Material EditText'
+            released  = new Date()
+            vcsTag = VERSION
+        }
+
+        licenses = ['Apache-2.0']
+        vcsUrl = git_url
+        websiteUrl = home_url
+
+        labels = ['android', 'material', 'edittext']
+        publicDownloadNumbers = true
     }
 
-    licenses = ['Apache-2.0']
-    vcsUrl = 'https://github.com/baole/MaterialEditText.git'
-    websiteUrl = 'https://github.com/baole/MaterialEditText'
-  }
-  configurations = ['archives']
+    configurations = ['archives']
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
 }
