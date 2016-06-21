@@ -37,6 +37,8 @@
     <attr name="met_hideUnderline" format="boolean" />
     <!-- Underline's color -->
     <attr name="met_underlineColor" format="color" />
+    <attr name="met_underlineFocusHeight" format="dimension" />
+    <attr name="met_underlineHeight" format="dimension" />
     <!-- Auto validate -->
     <attr name="met_autoValidate" format="boolean" />
     <!-- Left icon -->

@@ -1,9 +1,9 @@
-package com.rengwuxian.materialedittext;
+package org.baole;
 
 import android.test.AndroidTestCase;
 
 /**
- * Misc tests for {@link com.rengwuxian.materialedittext.MaterialEditText}.
+ * Misc tests for {@link MaterialEditText}.
  * <p/>
  * Created by egor on 25/11/14.
  */

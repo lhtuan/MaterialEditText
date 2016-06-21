@@ -1,4 +1,4 @@
-package com.rengwuxian.materialedittext.sample;
+package org.baole;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.rengwuxian.materialedittext.MaterialEditText;
-import com.rengwuxian.materialedittext.validation.RegexpValidator;
+import org.baole.materialedittext.sample.R;
+import org.baole.validation.RegexpValidator;
 
 
 public class MainActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.rengwuxian.materialedittext.validation;
+package org.baole.validation;
 
 /**
  * Created by mariotaku on 15/4/12.

@@ -1,4 +1,4 @@
-package com.rengwuxian.materialedittext;
+package org.baole;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -18,7 +18,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -34,8 +34,10 @@ import android.view.View;
 
 import com.nineoldandroids.animation.ArgbEvaluator;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.rengwuxian.materialedittext.validation.METLengthChecker;
-import com.rengwuxian.materialedittext.validation.METValidator;
+
+import org.baole.materialedittext.R;
+import org.baole.validation.METLengthChecker;
+import org.baole.validation.METValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +45,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by rengwuxian on 2015/1/8.
+ * AutoCompleteTextView in Material Design
+ * <p/>
+ * author:rengwuxian
+ * <p/>
  */
-public class MaterialMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView {
+public class MaterialAutoCompleteTextView extends AppCompatAutoCompleteTextView {
 
   @IntDef({FLOATING_LABEL_NONE, FLOATING_LABEL_NORMAL, FLOATING_LABEL_HIGHLIGHT})
   public @interface FloatingLabelType {
@@ -312,18 +317,18 @@ public class MaterialMultiAutoCompleteTextView extends AppCompatMultiAutoComplet
   private List<METValidator> validators;
   private METLengthChecker lengthChecker;
 
-  public MaterialMultiAutoCompleteTextView(Context context) {
+  public MaterialAutoCompleteTextView(Context context) {
     super(context);
     init(context, null);
   }
 
-  public MaterialMultiAutoCompleteTextView(Context context, AttributeSet attrs) {
+  public MaterialAutoCompleteTextView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public MaterialMultiAutoCompleteTextView(Context context, AttributeSet attrs, int style) {
+  public MaterialAutoCompleteTextView(Context context, AttributeSet attrs, int style) {
     super(context, attrs, style);
     init(context, attrs);
   }
@@ -1209,7 +1214,7 @@ public class MaterialMultiAutoCompleteTextView extends AppCompatMultiAutoComplet
    * @param validator Validator to add
    * @return This instance, for easy chaining
    */
-  public MaterialMultiAutoCompleteTextView addValidator(METValidator validator) {
+  public MaterialAutoCompleteTextView addValidator(METValidator validator) {
     if (validators == null) {
       this.validators = new ArrayList<>();
     }

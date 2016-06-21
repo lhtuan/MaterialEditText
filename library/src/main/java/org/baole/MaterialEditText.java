@@ -1,4 +1,4 @@
-package com.rengwuxian.materialedittext;
+package org.baole;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -34,8 +34,10 @@ import android.view.View;
 
 import com.nineoldandroids.animation.ArgbEvaluator;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.rengwuxian.materialedittext.validation.METLengthChecker;
-import com.rengwuxian.materialedittext.validation.METValidator;
+
+import org.baole.materialedittext.R;
+import org.baole.validation.METLengthChecker;
+import org.baole.validation.METValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,8 @@ import java.util.regex.Pattern;
  * <p/>
  */
 public class MaterialEditText extends AppCompatEditText {
+
+  private int underlineHeight, underlineFocusHeight;
 
   @IntDef({FLOATING_LABEL_NONE, FLOATING_LABEL_NORMAL, FLOATING_LABEL_HIGHLIGHT})
   public @interface FloatingLabelType {
@@ -415,6 +419,8 @@ public class MaterialEditText extends AppCompatEditText {
     helperTextAlwaysShown = typedArray.getBoolean(R.styleable.MaterialEditText_met_helperTextAlwaysShown, false);
     validateOnFocusLost = typedArray.getBoolean(R.styleable.MaterialEditText_met_validateOnFocusLost, false);
     checkCharactersCountAtBeginning = typedArray.getBoolean(R.styleable.MaterialEditText_met_checkCharactersCountAtBeginning, true);
+    underlineHeight = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_underlineHeight, getPixel(1));
+    underlineFocusHeight = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_underlineFocusHeight, getPixel(2));
     typedArray.recycle();
 
     int[] paddings = new int[]{
@@ -1315,19 +1321,19 @@ public class MaterialEditText extends AppCompatEditText {
       lineStartY += bottomSpacing;
       if (!isInternalValid()) { // not valid
         paint.setColor(errorColor);
-        canvas.drawRect(startX, lineStartY, endX, lineStartY + getPixel(2), paint);
+        canvas.drawRect(startX, lineStartY, endX, lineStartY + underlineFocusHeight, paint);
       } else if (!isEnabled()) { // disabled
         paint.setColor(underlineColor != -1 ? underlineColor : baseColor & 0x00ffffff | 0x44000000);
         float interval = getPixel(1);
         for (float xOffset = 0; xOffset < getWidth(); xOffset += interval * 3) {
-          canvas.drawRect(startX + xOffset, lineStartY, startX + xOffset + interval, lineStartY + getPixel(1), paint);
+          canvas.drawRect(startX + xOffset, lineStartY, startX + xOffset + interval, lineStartY + underlineHeight, paint);
         }
       } else if (hasFocus()) { // focused
         paint.setColor(primaryColor);
-        canvas.drawRect(startX, lineStartY, endX, lineStartY + getPixel(2), paint);
+        canvas.drawRect(startX, lineStartY, endX, lineStartY + underlineFocusHeight, paint);
       } else { // normal
         paint.setColor(underlineColor != -1 ? underlineColor : baseColor & 0x00ffffff | 0x1E000000);
-        canvas.drawRect(startX, lineStartY, endX, lineStartY + getPixel(1), paint);
+        canvas.drawRect(startX, lineStartY, endX, lineStartY + underlineHeight, paint);
       }
     }
 

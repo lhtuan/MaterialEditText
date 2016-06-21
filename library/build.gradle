@@ -1,12 +1,18 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+version = VERSION
+group = 'org.baole.materialedittext'
 
 android {
-  compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
-  buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+  compileSdkVersion Integer.parseInt(COMPILE_SDK)
+  buildToolsVersion BUILD_TOOLS_VERSION
+
 
   defaultConfig {
-    minSdkVersion 7
-    targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+    minSdkVersion Integer.parseInt(MIN_SDK)
+    targetSdkVersion Integer.parseInt(TARGET_SDK)
   }
   buildTypes {
     release {
@@ -17,10 +23,52 @@ android {
 }
 
 dependencies {
-  compile 'com.android.support:support-annotations:22.2.0'
   compile 'com.nineoldandroids:library:2.4.0'
-  compile 'com.android.support:appcompat-v7:22.2.0'
+  compile 'com.android.support:support-annotations:' + SUPPORT_VERSION
+  compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
 }
 
-// Used to push in maven
-apply from: '../maven_push.gradle'
+
+task generateSourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier 'sources'
+}
+
+task generateJavadocs(type: Javadoc) {
+  source = android.sourceSets.main.java.srcDirs
+  classpath += project.files(android.getBootClasspath()
+          .join(File.pathSeparator))
+}
+
+task generateJavadocsJar(type: Jar) {
+  from generateJavadocs.destinationDir
+  classifier 'javadoc'
+}
+
+generateJavadocsJar.dependsOn generateJavadocs
+
+artifacts {
+  archives generateJavadocsJar
+  archives generateSourcesJar
+}
+
+bintray {
+  user = USER
+  key = BINTRAY_KEY
+  pkg {
+    repo = 'maven'
+    name = group
+
+    version {
+      name = VERSION
+      desc = 'Material EditText'
+      released  = new Date()
+      vcsTag = VERSION
+    }
+
+    licenses = ['Apache-2.0']
+    vcsUrl = 'https://github.com/baole/MaterialEditText.git'
+    websiteUrl = 'https://github.com/baole/MaterialEditText'
+  }
+  configurations = ['archives']
+}
