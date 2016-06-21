@@ -11,7 +11,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'org.baole.org.baole.materialedittext:1.3@aar'
+    compile 'org.baole.org.baole.materialedittext:1.41@aar'
 }
 ```
 # Usages
