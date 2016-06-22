@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -27,6 +28,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -96,6 +98,8 @@ public class MaterialEditText extends AppCompatEditText {
    * the bottom texts' size.
    */
   private int bottomTextSize;
+
+  private int bottomTextColor;
 
   /**
    * the spacing between the main text and the floating label.
@@ -337,7 +341,7 @@ public class MaterialEditText extends AppCompatEditText {
 
   private void init(Context context, AttributeSet attrs) {
     if (isInEditMode()) {
-        return;
+      return;
     }
 
     iconSize = getPixel(32);
@@ -407,13 +411,15 @@ public class MaterialEditText extends AppCompatEditText {
     floatingLabelTextColor = typedArray.getColor(R.styleable.MaterialEditText_met_floatingLabelTextColor, -1);
     floatingLabelAnimating = typedArray.getBoolean(R.styleable.MaterialEditText_met_floatingLabelAnimating, true);
     bottomTextSize = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_bottomTextSize, getResources().getDimensionPixelSize(R.dimen.bottom_text_size));
+    bottomTextColor = typedArray.getColor(R.styleable.MaterialEditText_met_bottomTextColor, Color.parseColor("#8c8c8c"));
     hideUnderline = typedArray.getBoolean(R.styleable.MaterialEditText_met_hideUnderline, false);
     underlineColor = typedArray.getColor(R.styleable.MaterialEditText_met_underlineColor, -1);
     autoValidate = typedArray.getBoolean(R.styleable.MaterialEditText_met_autoValidate, false);
     iconLeftBitmaps = generateIconBitmaps(typedArray.getResourceId(R.styleable.MaterialEditText_met_iconLeft, -1));
     iconRightBitmaps = generateIconBitmaps(typedArray.getResourceId(R.styleable.MaterialEditText_met_iconRight, -1));
     showClearButton = typedArray.getBoolean(R.styleable.MaterialEditText_met_clearButton, false);
-    clearButtonBitmaps = generateIconBitmaps(R.drawable.met_ic_clear);
+    int clearButtonRes = typedArray.getInteger(R.styleable.MaterialEditText_met_clearButtonIcon, R.drawable.met_ic_clear);
+    clearButtonBitmaps = generateIconBitmaps(clearButtonRes);
     iconPadding = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_iconPadding, getPixel(16));
     floatingLabelAlwaysShown = typedArray.getBoolean(R.styleable.MaterialEditText_met_floatingLabelAlwaysShown, false);
     helperTextAlwaysShown = typedArray.getBoolean(R.styleable.MaterialEditText_met_helperTextAlwaysShown, false);
@@ -421,14 +427,15 @@ public class MaterialEditText extends AppCompatEditText {
     checkCharactersCountAtBeginning = typedArray.getBoolean(R.styleable.MaterialEditText_met_checkCharactersCountAtBeginning, true);
     underlineHeight = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_underlineHeight, getPixel(1));
     underlineFocusHeight = typedArray.getDimensionPixelSize(R.styleable.MaterialEditText_met_underlineFocusHeight, getPixel(2));
+
     typedArray.recycle();
 
     int[] paddings = new int[]{
-        android.R.attr.padding, // 0
-        android.R.attr.paddingLeft, // 1
-        android.R.attr.paddingTop, // 2
-        android.R.attr.paddingRight, // 3
-        android.R.attr.paddingBottom // 4
+            android.R.attr.padding, // 0
+            android.R.attr.paddingLeft, // 1
+            android.R.attr.paddingTop, // 2
+            android.R.attr.paddingRight, // 3
+            android.R.attr.paddingBottom // 4
     };
     TypedArray paddingsTypedArray = context.obtainStyledAttributes(attrs, paddings);
     int padding = paddingsTypedArray.getDimensionPixelSize(0, 0);
@@ -454,6 +461,11 @@ public class MaterialEditText extends AppCompatEditText {
     initFloatingLabel();
     initTextWatcher();
     checkCharactersCount();
+
+    //TODO bug here
+    if(maxCharacters > 0){
+      setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxCharacters)});
+    }
   }
 
   private void initText() {
@@ -490,6 +502,7 @@ public class MaterialEditText extends AppCompatEditText {
           setError(null);
         }
         postInvalidate();
+        Log.i("TextChanged", getText().toString());
       }
     });
   }
@@ -826,8 +839,8 @@ public class MaterialEditText extends AppCompatEditText {
     textPaint.setTextSize(bottomTextSize);
     if (tempErrorText != null || helperText != null) {
       Layout.Alignment alignment = (getGravity() & Gravity.RIGHT) == Gravity.RIGHT || isRTL() ?
-          Layout.Alignment.ALIGN_OPPOSITE : (getGravity() & Gravity.LEFT) == Gravity.LEFT ?
-          Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_CENTER;
+              Layout.Alignment.ALIGN_OPPOSITE : (getGravity() & Gravity.LEFT) == Gravity.LEFT ?
+              Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_CENTER;
       textLayout = new StaticLayout(tempErrorText != null ? tempErrorText : helperText, textPaint, getWidth() - getBottomTextLeftOffset() - getBottomTextRightOffset() - getPaddingLeft() - getPaddingRight(), alignment, 1.0f, 0.0f, true);
       destBottomLines = Math.max(textLayout.getLineCount(), minBottomTextLines);
     } else {
@@ -877,6 +890,7 @@ public class MaterialEditText extends AppCompatEditText {
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
+
       }
 
       @Override
@@ -1344,7 +1358,8 @@ public class MaterialEditText extends AppCompatEditText {
 
     // draw the characters counter
     if ((hasFocus() && hasCharactersCounter()) || !isCharactersCountValid()) {
-      textPaint.setColor(isCharactersCountValid() ? (baseColor & 0x00ffffff | 0x44000000) : errorColor);
+//      textPaint.setColor(isCharactersCountValid() ? (baseColor & 0x00ffffff | 0x44000000) : errorColor);
+      textPaint.setColor(isCharactersCountValid() ? bottomTextColor : errorColor);
       String charactersCounterText = getCharactersCounterText();
       canvas.drawText(charactersCounterText, isRTL() ? startX : endX - textPaint.measureText(charactersCounterText), lineStartY + bottomSpacing + relativeHeight, textPaint);
     }
@@ -1457,6 +1472,9 @@ public class MaterialEditText extends AppCompatEditText {
   }
 
   private String getCharactersCounterText() {
+    if(minCharacters <= 0){
+      return String.valueOf(maxCharacters - checkLength(getText()));
+    }
     String text;
     if (minCharacters <= 0) {
       text = isRTL() ? maxCharacters + " / " + checkLength(getText()) : checkLength(getText()) + " / " + maxCharacters;
